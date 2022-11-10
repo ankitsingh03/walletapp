@@ -16,8 +16,6 @@ public class TransactionService {
 
     @Autowired
     private TransactionRepository transactionRepository;
-    @Autowired
-    private UserRepository userRepository;
     public List<TransactionEntity> fetchTransaction(String email) {
         return transactionRepository.findAllByEmail(email);
     }

@@ -8,7 +8,6 @@ import com.wba.walletBankingApp.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.sql.PreparedStatement;
 import java.util.Optional;
 
 @Service
@@ -36,14 +35,13 @@ public class UserService {
     public String walletRecharge(Recharge recharge) {
         String email = recharge.getEmail();
         int amount = recharge.getAmount();
-
         if(amount <= 0) return "Invalid amount: " + amount;
 
         UserEntity existUser = userRepository.findByEmail(email).get();
         int prevAmount = existUser.getAmount();
         existUser.setAmount(prevAmount + amount);
         userRepository.save(existUser);
-        createTransaction(existUser.getEmail(), "Bank", existUser.getEmail(), "Credit", amount);
+        createTransaction(existUser.getEmail(), "Bank", existUser.getEmail(), "Credit", amount, existUser.getAmount());
         return  Integer.toString(existUser.getAmount());
     }
 
@@ -63,15 +61,17 @@ public class UserService {
         user.get().setAmount(user.get().getAmount() - tranferAmount);
         userRepository.save(senderUser.get());
         userRepository.save(user.get());
+        createTransaction(recharge.getEmail(), recharge.getEmail(), recharge.getSentTo(), "Debit", tranferAmount, user.get().getAmount());
         return Integer.toString(senderUser.get().getAmount());
     }
 
-    private void createTransaction(String email, String from, String sentTo, String type, int amount){
+    private void createTransaction(String email, String transEmail, String sentTo, String type, int transferAmount, int currentAmount){
         TransactionEntity tran = new TransactionEntity();
         tran.setEmail(email);
-        tran.setFrom(from);
+        tran.setTransEmail(transEmail);
         tran.setSentTo(sentTo);
-        tran.setAmount(amount);
+        tran.setTransferAmount(transferAmount);
+        tran.setAmount(currentAmount);
         tran.setTransType(type);
         transactionRepository.save(tran);
     }

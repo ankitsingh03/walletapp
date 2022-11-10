@@ -7,8 +7,7 @@ import lombok.NoArgsConstructor;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import java.util.ArrayList;
+        import javax.persistence.Id;
 
 @Entity
 @Data
@@ -17,10 +16,11 @@ import java.util.ArrayList;
 public class TransactionEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
+    private Long transId;
     private String email;
-    private String from;
+    private String transEmail;
     private String sentTo;
     private String transType;
     private int amount;
+    private int transferAmount;
 }
